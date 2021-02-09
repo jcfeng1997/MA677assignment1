@@ -1,0 +1,91 @@
+---
+title: "Hypothesis testing"
+author: "Jiachen Feng"
+date: "2021/2/8"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Explaination for the conclusion
+
+```{r}
+alpha_0.6_m <- function(m){
+  1-pbinom(m-1,100,0.6)
+}
+
+##ggplot()+
+  ##stat_function(fun = alpha_0.6_m)+
+  ##xlim(1,100)
+
+for (i in 1:100) {
+  m <- 1
+  if(alpha_0.6_m(m)>0.05){
+    m <- i+1
+  }
+  if(alpha_0.6_m(m)<0.05){
+    print(m)
+    break
+  }
+}
+
+alpha_0.8_m <- function(m){
+  1-pbinom(m-1,100,0.8)
+}
+
+##ggplot()+
+  ##stat_function(fun = alpha_0.8_m)+
+  ##xlim(1,100)
+
+for (i in 1:100) {
+  m <- 1
+  if(alpha_0.8_m(m)>0.95){
+    m <- i+1
+  }
+  if(alpha_0.8_m(m)<0.95){
+    print(m-1)
+    break
+  }
+}
+```
+$\alpha(p)=\sum_{m\le k\le n}b(n,p,k)$ gives the probability of a type 1 error. 
+First, we need to find the smallest value for *m* that thwarts a type 1 error. In this case, p equals to 0.6, because the null hypothesis is true.
+Then, we need to find the largest value for *m* that thwarts a type 2 error. In this case, p equals to 0.8 here(this value is chosen arbitrarily). We need to find the largest value of *m* which makes $\beta(p)<0.05$.
+
+
+## Replication and Explaination for Figure 3.7
+
+```{r}
+# Replicate
+
+# define function for m=69 
+alpha_p_69 <- function(p){
+  1-pbinom(68,100,p)
+}
+
+# define function for m=73 
+alpha_p_73 <- function(p){
+  1-pbinom(72,100,p)
+}
+
+# plot
+ggplot()+
+  stat_function(fun = alpha_p_69)+
+  xlim(.4,1)+
+  stat_function(fun = alpha_p_73)+
+  xlim(.4,1)+
+  scale_y_continuous(breaks=seq(0, 1, 0.1))+
+  geom_segment(aes(x=.6,xend=.8,y=.95,yend=.95),colour="#990000", linetype="dashed")+
+  geom_segment(aes(x=.6,xend=.8,y=.05,yend=.05),colour="#990000", linetype="dashed")+
+  geom_segment(aes(x=.6,xend=.6,y=.05,yend=.95),colour="#990000", linetype="dashed")+
+  geom_segment(aes(x=.8,xend=.8,y=.05,yend=.95),colour="#990000", linetype="dashed")+
+  xlab("p")+
+  ylab(" ")
+
+  
+```
+
+As the figure declares, as *m* increases, the graph of $\alpha$ moves to the right. This means when *m* increases, it makes a type 1 error less likely.
